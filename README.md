@@ -8,10 +8,13 @@
 SaberRecon is a cybersecurity reconnaissance tool developed by the owner and founder of Sabershield Cybersecurity LLC, Hunter Gohil. The goal of this project is to simplify the initial phase of reconnaissance for penetration testers, bug bounty hunters, and cybersecurity professionals. 
 
 # Disclaimer 
-SaberRecon is a tool that is designed to be used ONLY with the permission of the target. Any actions taken by any users with this tool are NOT the responsibility of Sabershield Cybersecurity LLC. 
+SaberRecon is intended **only for use against systems you own or have been explicitly authorized to test**.  
+Unauthorized scanning, probing, or reconnaissance may violate local, state, federal, or international laws.
 
+**SaberShield Cybersecurity LLC assumes no responsibility or liability** for misuse of this tool or for actions taken by users.  
+By using SaberRecon, you acknowledge that you are solely responsible for ensuring all activities are legal, ethical, and properly authorized.
 # Installation 
-Installating SaberRecon is simple! Run these two commands: 
+Installing SaberRecon is simple! Run these two commands: 
 
 docker pull huntergohil/saberrecon:latest
 
