@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>SaberRecon Report - {{ domain }}</title>
+  <style>
+    body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 30px; }
+    .header { display: flex; justify-content: space-between; gap: 20px; align-items: baseline; flex-wrap: wrap; }
+    .badge { display: inline-block; padding: 4px 8px; border: 1px solid #ddd; border-radius: 999px; font-size: 12px; color: #444; }
+    .hint { color: #666; font-size: 13px; margin-top: 6px; }
+    .actions { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; }
+    a.btn { display: inline-block; padding: 10px 12px; border: 1px solid #ddd; border-radius: 10px; text-decoration: none; color: #0b57d0; }
+    a.btn:hover { background: #f6f8ff; }
+
+    details.section {
+      margin-top: 14px;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .report-logo {
+      display: block;
+      max-width: 340px;
+      width: 100%;
+      height: auto;
+      margin: 10px 0 6px 0;
+    }
+    
+
+    summary.section-title {
+      list-style: none;
+      cursor: pointer;
+      padding: 12px 14px;
+      background: #fafafa;
+      border-bottom: 1px solid #eee;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      user-select: none;
+    }
+
+    summary.section-title::-webkit-details-marker { display: none; }
+
+    .chev {
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid #555;
+      border-bottom: 2px solid #555;
+      transform: rotate(-45deg);
+      transition: transform 160ms ease;
+      margin-left: 8px;
+      flex: 0 0 auto;
+    }
+    details[open] .chev { transform: rotate(45deg); }
+
+    .meta {
+      padding: 10px 14px;
+      background: #fff;
+      border-bottom: 1px solid #f2f2f2;
+      color: #555;
+      font-size: 13px;
+    }
+
+    pre {
+      margin: 0;
+      padding: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #0b0b0b;
+      color: #eaeaea;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .controls {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    button.ctrl {
+      padding: 8px 10px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: #fff;
+      cursor: pointer;
+    }
+    button.ctrl:hover { background: #f6f6f6; }
+
+    input#filter {
+      padding: 9px 10px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      min-width: 260px;
+    }
+    .muted { color: #666; font-size: 13px; }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <h1 style="margin:0;">SaberRecon Report</h1>
+  
+      <a href="https://sabershield.net" target="_blank" rel="noopener noreferrer">
+        <img
+          src="{{ logo_data_uri if logo_data_uri else '/static/SaberShieldLogoWithText.png' }}"
+          alt="SaberShield Cybersecurity"
+          class="report-logo"
+        />
+      </a>
+  
+      <div class="hint">SaberShield Cybersecurity LLC · "Sharp Security, Solid Defense"</div>
+    </div>
+  
+    <div class="badge">Generated: {{ timestamp }}</div>
+  </div>
+  
+
+  <p><b>Target:</b> {{ target }}</p>
+  <p><b>Domain:</b> {{ domain }}</p>
+
+  <div class="actions">
+    <a class="btn" href="/history">History</a>
+  </div>
+
+  <div class="controls">
+    <button class="ctrl" type="button" onclick="openAll()">Open all</button>
+    <button class="ctrl" type="button" onclick="closeAll()">Close all</button>
+    <input id="filter" type="text" placeholder="Filter sections (e.g., nmap, dns, gobuster)..." oninput="applyFilter()" />
+    <span class="muted" id="count"></span>
+  </div>
+
+  {% for s in sections %}
+    <details class="section" data-title="{{ s.title|lower }}" {% if loop.first %}open{% endif %}>
+      <summary class="section-title">
+        <span>{{ s.title }}</span>
+        <span class="chev" aria-hidden="true"></span>
+      </summary>
+      <div class="meta"><b>Command:</b> {{ s.command }}</div>
+      <pre>{{ s.output }}</pre>
+    </details>
+  {% endfor %}
+
+<script>
+  const detailsEls = () => Array.from(document.querySelectorAll("details.section"));
+  const countEl = document.getElementById("count");
+
+  function openAll() {
+    detailsEls().forEach(d => d.open = true);
+  }
+
+  function closeAll() {
+    detailsEls().forEach(d => d.open = false);
+  }
+
+  function applyFilter() {
+    const q = (document.getElementById("filter").value || "").trim().toLowerCase();
+    let shown = 0;
+
+    detailsEls().forEach(d => {
+      const title = d.getAttribute("data-title") || "";
+      const match = !q || title.includes(q);
+      d.classList.toggle("hidden", !match);
+      if (match) shown++;
+    });
+
+    countEl.textContent = q ? `${shown} section(s) shown` : `${detailsEls().length} section(s)`;
+  }
+  applyFilter();
+</script>
+</body>
+</html>

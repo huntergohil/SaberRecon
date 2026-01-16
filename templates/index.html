@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>SabeRecon</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: #f5f6f8;
+    }
+    .page {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 48px 20px;
+    }
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      padding: 36px 42px;
+    }
+
+    .logo {
+      max-width: 520px;
+      width: 100%;
+      height: auto;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 32px;
+    }
+
+    p {
+      font-size: 16px;
+      line-height: 1.55;
+      color: #333;
+    }
+
+    .muted {
+      color: #666;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    label {
+      display: block;
+      margin-top: 24px;
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-top: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 16px;
+      padding: 12px 18px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background: #b00020;
+      color: #fff;
+    }
+
+    button:hover {
+      background: #8f0019;
+    }
+
+    .links {
+      margin-top: 20px;
+    }
+
+    a {
+      color: #0b57d0;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 24px;
+      }
+      h1 {
+        font-size: 26px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="container">
+
+      <img
+        src="/static/SaberShieldLogoWithText.png"
+        alt="SaberShield Cybersecurity"
+        class="logo"
+      />
+
+      <h1>Welcome to SaberRecon!</h1>
+
+      <p>
+        <strong>SaberRecon</strong> is a reconnaissance tool developed by the founder
+        and owner of SaberShield Cybersecurity LLC, Hunter Gohil.
+      </p>
+
+      <p class="muted">
+        Enter a domain or URL. The report is generated as a single HTML file saved in the container
+        and available for viewing or download.
+      </p>
+
+      <form action="/run" method="post">
+        <label for="target">Target</label>
+        <input id="target" name="target" placeholder="https://example.com" required />
+        <button type="submit">Run Recon</button>
+      </form>
+
+      <div class="links">
+        <a href="/history">
+          View report history
+        </a>
+      </div>
+
+      <h3>
+      	Authorized Use Disclaimer
+      </h3>
+      
+      <p>
+		SaberRecon may only be used against systems you own or have been explicitly authorized to test. Unauthorized use may be illegal. 
+		SaberShield Cybersecurity LLC is not responsible for any misuse of this tool or for actions taken by its users.
+      </p>	
+    </div>
+  </div>
+</body>
+</html>

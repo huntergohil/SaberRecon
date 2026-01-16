@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>SaberRecon - Running</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 40px; }
+    .card { max-width: 760px; padding: 20px; border: 1px solid #ddd; border-radius: 12px; }
+    .bar-wrap {
+      margin-top: 14px;
+      width: 100%;
+      height: 18px;
+      background: #0b0b0b;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid #222;
+    }
+    
+    .bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(
+        90deg,
+        #8f0019,
+        #b00020,
+        #d1002d
+      );
+      transition: width 250ms ease;
+      box-shadow: 0 0 8px rgba(209, 0, 45, 0.6);
+    }
+    
+    .row { display: flex; gap: 10px; align-items: center; justify-content: space-between; margin-top: 10px; }
+    .muted { color: #666; font-size: 14px; }
+    .err { color: #b00020; white-space: pre-wrap; background: #fff5f5; border: 1px solid #ffd1d1; padding: 10px; border-radius: 10px; margin-top: 12px; }
+    a { color: #0b57d0; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .btn { display: inline-block; padding: 10px 12px; border: 1px solid #ddd; border-radius: 10px; text-decoration: none; }
+    .brand {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    
+    .brand .logo {
+      max-width: 360px;
+      width: 100%;
+      height: auto;
+      margin-bottom: 10px;
+    }
+    
+    .brand .promo {
+      font-size: 14px;
+      color: #444;
+    }
+    
+    .brand .promo a {
+      color: #b00020;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    
+    .brand .promo a:hover {
+      text-decoration: underline;
+    }
+    
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <a href="https://sabershield.net" target="_blank" rel="noopener noreferrer">
+        <img
+          src="/static/SaberShieldLogoWithText.png"
+          alt="SaberShield Cybersecurity"
+          class="logo"
+        />
+      </a>
+    
+      <p class="promo">
+        While you wait, feel free to check out
+        <a href="https://sabershield.net" target="_blank" rel="noopener noreferrer">
+          https://sabershield.net
+        </a>
+        for premium tech services!
+      </p>
+    </div>
+    <h1>Recon in progress</h1>
+    <div class="muted">Job ID: {{ job_id }}</div>
+
+    <div class="bar-wrap" aria-label="progress bar">
+      <div id="bar" class="bar"></div>
+    </div>
+
+    <div class="row">
+      <div id="stage" class="muted">Starting…</div>
+      <div id="pct" class="muted">0%</div>
+    </div>
+
+    <div class="row" style="margin-top:14px;">
+      <a class="btn" href="/history">History</a>
+      <a class="btn" href="/">New scan</a>
+    </div>
+
+    <div id="error" class="err" style="display:none;"></div>
+  </div>
+
+<script>
+  const jobId = "{{ job_id }}";
+  const bar = document.getElementById("bar");
+  const stage = document.getElementById("stage");
+  const pct = document.getElementById("pct");
+  const errBox = document.getElementById("error");
+
+  async function poll() {
+    try {
+      const res = await fetch(`/api/status/${jobId}`, { cache: "no-store" });
+      if (!res.ok) throw new Error(`Status error: ${res.status}`);
+      const j = await res.json();
+
+      if (j.percent !== undefined) {
+        const p = Math.max(0, Math.min(100, j.percent));
+        bar.style.width = p + "%";
+        pct.textContent = p + "%";
+      }
+      if (j.stage) stage.textContent = j.stage;
+
+      if (j.status === "done" && j.filename) {
+        window.location.href = `/view/${j.filename}`;
+        return;
+      }
+
+      if (j.status === "error") {
+        errBox.style.display = "block";
+        errBox.textContent = "Recon failed:\n" + (j.error || "Unknown error");
+        stage.textContent = "Error";
+        return;
+      }
+
+      setTimeout(poll, 750);
+    } catch (e) {
+      stage.textContent = "Still working… (reconnecting)";
+      setTimeout(poll, 1200);
+    }
+  }
+
+  poll();
+</script>
+</body>
+</html>
