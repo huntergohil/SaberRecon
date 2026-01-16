@@ -1,7 +1,7 @@
 # SaberRecon
 <p align="center">
   <a href="https://sabershield.net">
-    <img src="static/SaberShieldLogoWithText.png" alt="SaberShield Cybersecurity" width="400">
+    <img src="static/SaberShieldLogoWithTextWithBackground.png" alt="SaberShield Cybersecurity" width="400">
   </a>
 </p>
 
