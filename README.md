@@ -15,11 +15,12 @@ Unauthorized scanning, probing, or reconnaissance may violate local, state, fede
 By using SaberRecon, you acknowledge that you are solely responsible for ensuring all activities are legal, ethical, and properly authorized.
 # Installation 
 Installing SaberRecon is simple! Run these two commands: 
-
+```bash
 docker pull huntergohil/saberrecon:latest
-
+```
+```bash
 docker run -d --name saberrecon -p 8080:8080 huntergohil/saberrecon:latest
-
+```
 Of course, you can replace port 8080 with any port you desire. 
 You can now navigate to 127.0.0.1:8080 and begin utilizing the tool. 
 
