@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>SaberRecon - Tools</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Tools</h1>
+    <p>Pick a tool to configure options and run it against a target.</p>
+
+    <ul style="line-height: 2;">
+      {% for t in tools %}
+        <li>
+          <a href="/tools/{{ t.id }}">{{ t.title }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <div style="margin-top:14px;">
+      <a href="/">Back home</a>
+    </div>
+  </div>
+</body>
+</html>

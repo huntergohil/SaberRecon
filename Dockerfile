@@ -2,13 +2,11 @@ FROM python:3.12-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install OS deps once
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates curl dnsutils whois nmap git \
     golang-go ruby ruby-dev build-essential whatweb \
   && rm -rf /var/lib/apt/lists/*
 
-# (Optional) Pin versions instead of @latest for more stable caching
 ARG SUBFINDER_VERSION=v2.6.8
 ARG GOBUSTER_VERSION=v3.6.0
 

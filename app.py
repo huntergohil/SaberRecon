@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Form, BackgroundTasks
+from fastapi import FastAPI, Request, Form, BackgroundTasks, HTTPException
 from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -9,7 +9,9 @@ import re
 import threading
 from urllib.parse import urlparse
 from datetime import datetime
-from recon_core import run_recon_and_write_html
+from recon_core import run_recon_and_write_html, get_tools_list, get_tool, run_single_tool, render_report_html, safe_report_filename
+from starlette.templating import Jinja2Templates
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -23,6 +25,60 @@ SAFE_NAME_RE = re.compile(r"^[a-zA-Z0-9_.-]+$")
 
 JOBS = {}
 JOBS_LOCK = threading.Lock()
+
+env = Environment(
+    loader=FileSystemLoader("templates"),
+    autoescape=select_autoescape(["html", "xml"]),
+)
+
+@app.get("/tools", response_class=HTMLResponse)
+def tools_list_page(request: Request):
+    tools = get_tools_list()
+    return templates.TemplateResponse(
+        "tools_list.html",
+        {"request": request, "tools": tools},
+    )
+
+@app.get("/tools/{tool_id}", response_class=HTMLResponse)
+def tool_detail_page(request: Request, tool_id: str):
+    try:
+        tool = get_tool(tool_id)
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Tool not found")
+
+    return templates.TemplateResponse(
+        "tool_detail.html",
+        {"request": request, "tool_id": tool_id, "tool": tool},
+    )
+@app.post("/run-tool")
+async def run_tool(request: Request):
+    form = await request.form()
+    form_dict = dict(form)
+
+    tool_id = form_dict.get("tool_id")
+    target = form_dict.get("target")
+
+    if not tool_id or not target:
+        return HTMLResponse("Missing tool_id or target", status_code=400)
+
+    selected = {k: v for k, v in form_dict.items() if k not in ("tool_id", "target")}
+
+    result = run_single_tool(target=target, tool_id=tool_id, selected=selected)
+
+    html = render_report_html(
+        target=result["target"],
+        domain=result["domain"],
+        sections=[result["section"]],
+    )
+
+    out_dir = Path("/data")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    filename = f"{tool_id}-{datetime.now().strftime('%m-%d-%Y-%H%M')}.html"
+    out_path = out_dir / filename
+    out_path.write_text(html, encoding="utf-8")
+
+    return RedirectResponse(url=f"/view/{filename}", status_code=303)
+
 
 def normalize_domain_for_filename(target: str) -> str:
     t = target.strip()

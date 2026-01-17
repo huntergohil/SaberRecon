@@ -1,0 +1,181 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>SaberRecon - {{ tool.title }}</title>
+  <link rel="stylesheet" href="/static/styles.css">
+
+  <style>
+    details {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin: 10px 0;
+      background: #fff;
+    }
+    summary {
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .opt { display:block; margin: 8px 0; }
+    .hint { font-family: monospace; opacity: 0.7; margin-left: 6px; }
+
+    .cmd-bar {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.98);
+      border-top: 1px solid #ddd;
+      padding: 12px 16px;
+      z-index: 9999;
+    }
+    .cmd-row {
+      display:flex;
+      gap:10px;
+      align-items:center;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .cmd-row input {
+      flex: 1;
+      font-family: monospace;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+    .cmd-row button {
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .page-pad { padding-bottom: 90px; }
+  </style>
+</head>
+
+<body>
+<div class="container page-pad">
+  <h1>{{ tool.title }}</h1>
+  <p>Select options to generate a command. Then run it against your target.</p>
+
+  <form method="POST" action="/run-tool" id="toolForm">
+    <input type="hidden" name="tool_id" value="{{ tool_id }}">
+
+    <label><strong>Target</strong></label>
+    <input name="target" type="text" required style="width:100%;">
+
+    {% set groups = tool.groups if tool.groups is defined else [
+      {"name": "Options", "options": tool.options if tool.options is defined else []}
+    ] %}
+
+    {% for g in groups %}
+      <details {% if loop.first %}open{% endif %}>
+        <summary>{{ g.name }}</summary>
+
+        {% if g.options|length == 0 %}
+          <em>No options available.</em>
+        {% endif %}
+
+        {% for opt in g.options %}
+
+          {% if opt.type == "bool" %}
+            <label class="opt">
+              <input type="checkbox" name="{{ opt.flag }}" {% if opt.default %}checked{% endif %}>
+              {{ opt.label }} <span class="hint">{{ opt.flag }}</span>
+            </label>
+
+          {% elif opt.type == "int" %}
+            <label class="opt">
+              {{ opt.label }} <span class="hint">{{ opt.flag }}</span><br>
+              <input type="number" name="{{ opt.flag }}"
+                     value="{{ opt.default }}"
+                     {% if opt.min is defined %}min="{{ opt.min }}"{% endif %}
+                     {% if opt.max is defined %}max="{{ opt.max }}"{% endif %}>
+            </label>
+
+          {% elif opt.type == "str" %}
+            <label class="opt">
+              {{ opt.label }} <span class="hint">{{ opt.flag }}</span><br>
+              <input type="text" name="{{ opt.flag }}"
+                     value="{{ opt.default if opt.default else '' }}">
+            </label>
+
+          {% elif opt.type == "choice" %}
+            <label class="opt">
+              {{ opt.label }} <span class="hint">{{ opt.flag }}</span><br>
+              <select name="{{ opt.flag }}">
+                <option value="">(none)</option>
+                {% for c in opt.choices %}
+                  <option value="{{ c }}" {% if opt.default == c %}selected{% endif %}>
+                    {{ c }}
+                  </option>
+                {% endfor %}
+              </select>
+            </label>
+
+          {% elif opt.type == "count" %}
+            <label class="opt">
+              {{ opt.label }} <span class="hint">{{ opt.flag }}</span><br>
+              <input type="number" name="{{ opt.flag }}"
+                     value="{{ opt.default if opt.default is defined else 0 }}"
+                     min="0" max="5">
+            </label>
+
+          {% endif %}
+
+        {% endfor %}
+      </details>
+    {% endfor %}
+
+    <div class="cmd-bar">
+      <div class="cmd-row">
+        <input type="text" id="cmdPreview" readonly>
+        <button type="submit">Run</button>
+        <a href="/tools">Back</a>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+  const base = {{ tool.base | tojson }};
+  const kind = {{ tool.kind | tojson }};
+  const toolData = {{ tool | tojson }};
+
+  const options = toolData.groups
+    ? toolData.groups.flatMap(g => g.options || [])
+    : (toolData.options || []);
+
+  const form = document.getElementById('toolForm');
+  const preview = document.getElementById('cmdPreview');
+
+  function normalizeTarget(t) {
+    t = (t || '').trim();
+    if (!t) return '';
+    if (!t.includes('://')) t = 'https://' + t;
+    try {
+      return new URL(t).host;
+    } catch {
+      return t.replace(/^https?:\/\//, '').replace(/\/+$/, '');
+    }
+  }
+
+  function buildPreview() {
+    const fd = new FormData(form);
+    const target = normalizeTarget(fd.get('target'));
+    let args = [...base];
+
+    for (const opt of options) {
+      const v = (fd.get(opt.flag) || '').toString().trim();
+      if (!v || v === '0') continue;
+      args.push(opt.flag, opt.type === 'bool' ? null : v);
+    }
+
+    args = args.filter(Boolean);
+    args.push(kind === 'domain' ? target : `https://${target}`);
+    preview.value = args.join(' ');
+  }
+
+  form.addEventListener('input', buildPreview);
+  buildPreview();
+</script>
+</body>
+</html>
