@@ -41,7 +41,7 @@ Navigating to tools allows users to view each tool individually and customize th
 Some flags may require elevated privileges, and the developers are currently investigating the best solution for these flags to maximize security for the user. 
 
 
-#Future Plans 
+# Future Plans 
 There are two primary future plans for SaberRecon: 
 1. Integrate AI usage 
 There will be the option to provide an AI API key and utilize openAI to analyze reports. This will allow users to quickly and easily identify potential vulnerabilities and recieve guidance on the next steps they should take to discover the vulnerability. 
