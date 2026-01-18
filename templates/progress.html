@@ -1,106 +1,351 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <title>SaberRecon - Running</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <link rel="stylesheet" href="/static/styles.css">
+
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 40px; }
-    .card { max-width: 760px; padding: 20px; border: 1px solid #ddd; border-radius: 12px; }
-    .bar-wrap {
+    :root{
+      --ss-red:   rgb(163, 0, 21);
+      --ss-teal:  rgb(32, 163, 158);
+      --ss-cream: rgb(237, 235, 215);
+      --ss-black: rgb(0, 0, 0);
+      --ss-navy:  rgb(32, 44, 57);
+
+      --bg-top:   rgb(22, 30, 40);
+      --bg-mid:   rgb(10, 14, 18);
+
+      --panel:    rgba(237,235,215,0.06);
+      --panel2:   rgba(237,235,215,0.085);
+      --border:   rgba(237,235,215,0.14);
+      --border2:  rgba(237,235,215,0.22);
+
+      --text:     rgb(244, 242, 226);
+      --muted:    rgba(237,235,215,0.78);
+      --muted2:   rgba(237,235,215,0.60);
+
+      --tealGlow: rgba(32,163,158,0.22);
+      --redGlow:  rgba(163,0,21,0.20);
+
+      --radius: 18px;
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+    }
+
+    * { box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color: var(--text);
+
+      background:
+        radial-gradient(900px 520px at 18% 12%, var(--tealGlow), transparent 58%),
+        radial-gradient(820px 520px at 84% 18%, var(--redGlow), transparent 62%),
+        linear-gradient(180deg, var(--bg-top) 0%, var(--bg-mid) 78%, var(--ss-black) 100%);
+      min-height: 100vh;
+    }
+
+    a{ color: inherit; text-decoration: none; }
+
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(0,0,0,0.55);
+      border-bottom: 1px solid rgba(237,235,215,0.10);
+    }
+
+    .topbar-inner{
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 14px 18px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 14px;
+      min-width: 260px;
+    }
+
+    .brand img{
+      height: 58px;
+      width: auto;
+      border-radius: 14px;
+      border: 1px solid rgba(237,235,215,0.14);
+      box-shadow: 0 14px 40px rgba(0,0,0,.45);
+      background: rgba(0,0,0,0.25);
+    }
+
+    .brand .name{
+      font-weight: 900;
+      letter-spacing: .2px;
+      font-size: 20px;
+      line-height: 1.1;
+    }
+    .brand .tag{
+      font-size: 12px;
+      color: var(--muted2);
+      margin-top: 2px;
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      gap: 18px;
+      font-weight: 800;
+      color: var(--muted);
+    }
+    .nav a{
+      padding: 10px 12px;
+      border-radius: 12px;
+      transition: 140ms ease;
+      border: 1px solid transparent;
+    }
+    .nav a:hover{
+      background: rgba(237,235,215,0.06);
+      border-color: rgba(237,235,215,0.10);
+      color: var(--text);
+    }
+    .nav a.active{
+      background: rgba(32,163,158,0.12);
+      border: 1px solid rgba(32,163,158,0.28);
+      color: var(--text);
+      box-shadow: 0 0 0 3px rgba(32,163,158,0.08);
+    }
+
+    .accent-line{
+      height: 3px;
+      background: linear-gradient(
+        90deg,
+        rgba(163,0,21,0.0),
+        rgba(163,0,21,0.85),
+        rgba(32,163,158,0.75),
+        rgba(32,163,158,0.0)
+      );
+      opacity: .85;
+    }
+
+    .page{
+      width: 100%;
+      min-height: calc(100vh - 76px);
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      padding: 34px 18px 70px;
+    }
+
+    .card{
+      width: 100%;
+      max-width: 860px;
+      padding: 22px 22px 18px;
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 2px);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(237,235,215,0.09), rgba(237,235,215,0.05));
+    }
+
+    .card:before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      background:
+        radial-gradient(620px 320px at 18% 12%, rgba(32,163,158,0.16), transparent 60%),
+        radial-gradient(620px 320px at 92% 16%, rgba(163,0,21,0.10), transparent 62%);
+      opacity: .95;
+      pointer-events:none;
+    }
+
+    .card > *{ position: relative; }
+
+    .brand-block{
+      text-align: center;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(237,235,215,0.12);
+    }
+
+    .brand-block .logo{
+      max-width: 360px;
+      width: 100%;
+      height: auto;
+      margin: 0 auto 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(237,235,215,0.12);
+      background: rgba(0,0,0,0.18);
+      box-shadow: 0 14px 40px rgba(0,0,0,.45);
+      display: block;
+    }
+
+    .promo{
+      font-size: 14px;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .promo a{
+      color: var(--text);
+      font-weight: 900;
+      border-bottom: 1px dashed rgba(32,163,158,0.45);
+      padding-bottom: 1px;
+    }
+    .promo a:hover{
+      border-bottom-color: rgba(32,163,158,0.75);
+    }
+
+    h1{
+      margin: 14px 0 6px;
+      font-size: 30px;
+      letter-spacing: -0.3px;
+    }
+
+    .muted{
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .bar-wrap{
       margin-top: 14px;
       width: 100%;
       height: 18px;
-      background: #0b0b0b;
+      background: rgba(0,0,0,0.45);
       border-radius: 999px;
       overflow: hidden;
-      border: 1px solid #222;
+      border: 1px solid rgba(237,235,215,0.14);
     }
-    
-    .bar {
+
+    .bar{
       height: 100%;
       width: 0%;
       background: linear-gradient(
         90deg,
-        #8f0019,
-        #b00020,
-        #d1002d
+        rgba(163,0,21,0.85),
+        rgba(163,0,21,0.60),
+        rgba(32,163,158,0.75)
       );
       transition: width 250ms ease;
-      box-shadow: 0 0 8px rgba(209, 0, 45, 0.6);
+      box-shadow:
+        0 0 10px rgba(163,0,21,0.25),
+        0 0 14px rgba(32,163,158,0.18);
     }
-    
-    .row { display: flex; gap: 10px; align-items: center; justify-content: space-between; margin-top: 10px; }
-    .muted { color: #666; font-size: 14px; }
-    .err { color: #b00020; white-space: pre-wrap; background: #fff5f5; border: 1px solid #ffd1d1; padding: 10px; border-radius: 10px; margin-top: 12px; }
-    a { color: #0b57d0; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    .btn { display: inline-block; padding: 10px 12px; border: 1px solid #ddd; border-radius: 10px; text-decoration: none; }
-    .brand {
-      text-align: center;
-      margin-bottom: 18px;
+
+    .row{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      justify-content: space-between;
+      margin-top: 10px;
+      flex-wrap: wrap;
     }
-    
-    .brand .logo {
-      max-width: 360px;
-      width: 100%;
-      height: auto;
-      margin-bottom: 10px;
-    }
-    
-    .brand .promo {
-      font-size: 14px;
-      color: #444;
-    }
-    
-    .brand .promo a {
-      color: #b00020;
-      font-weight: 600;
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid rgba(237,235,215,0.18);
+      border-radius: 12px;
       text-decoration: none;
+      font-weight: 900;
+      color: var(--text);
+      background: rgba(237,235,215,0.08);
+      transition: 140ms ease;
     }
-    
-    .brand .promo a:hover {
-      text-decoration: underline;
+    .btn:hover{
+      background: rgba(237,235,215,0.12);
+      border-color: rgba(237,235,215,0.26);
     }
-    
+
+    .err{
+      color: var(--text);
+      white-space: pre-wrap;
+      background: rgba(163,0,21,0.12);
+      border: 1px solid rgba(163,0,21,0.28);
+      padding: 12px;
+      border-radius: 14px;
+      margin-top: 14px;
+      box-shadow: 0 0 0 3px rgba(163,0,21,0.08);
+    }
+
+    @media (max-width: 640px){
+      .card{ padding: 18px; }
+      h1{ font-size: 26px; }
+      .brand{ min-width: unset; }
+      .brand .name, .brand .tag{ display:none; }
+    }
   </style>
 </head>
+
 <body>
-  <div class="card">
-    <div class="brand">
-      <a href="https://sabershield.net" target="_blank" rel="noopener noreferrer">
-        <img
-          src="/static/SaberShieldLogoWithText.png"
-          alt="SaberShield Cybersecurity"
-          class="logo"
-        />
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="/" class="brand">
+        <img src="/static/SaberShieldLogoWithTextWithBackground.png" alt="SaberShield">
+        <div>
+          <div class="name">SaberRecon</div>
+          <div class="tag">Beginner-friendly recon toolkit</div>
+        </div>
       </a>
-    
-      <p class="promo">
-        While you wait, feel free to check out
+
+      <nav class="nav">
+        <a href="/">Home</a>
+        <a href="/tools">Tools</a>
+        <a href="/history">History</a>
+      </nav>
+    </div>
+    <div class="accent-line"></div>
+  </header>
+
+  <div class="page">
+    <div class="card">
+      <div class="brand-block">
         <a href="https://sabershield.net" target="_blank" rel="noopener noreferrer">
-          https://sabershield.net
+          <img
+            src="/static/SaberShieldLogoWithText.png"
+            alt="SaberShield Cybersecurity"
+            class="logo"
+          />
         </a>
-        for premium tech services!
-      </p>
-    </div>
-    <h1>Recon in progress</h1>
-    <div class="muted">Job ID: {{ job_id }}</div>
 
-    <div class="bar-wrap" aria-label="progress bar">
-      <div id="bar" class="bar"></div>
-    </div>
+        <p class="promo">
+          While you wait, feel free to check out
+          <a href="https://sabershield.net" target="_blank" rel="noopener noreferrer">
+            https://sabershield.net
+          </a>
+          for premium tech services!
+        </p>
+      </div>
 
-    <div class="row">
-      <div id="stage" class="muted">Starting…</div>
-      <div id="pct" class="muted">0%</div>
-    </div>
+      <h1>Recon in progress</h1>
+      <div class="muted">Job ID: {{ job_id }}</div>
 
-    <div class="row" style="margin-top:14px;">
-      <a class="btn" href="/history">History</a>
-      <a class="btn" href="/">New scan</a>
-    </div>
+      <div class="bar-wrap" aria-label="progress bar">
+        <div id="bar" class="bar"></div>
+      </div>
 
-    <div id="error" class="err" style="display:none;"></div>
+      <div class="row">
+        <div id="stage" class="muted">Starting…</div>
+        <div id="pct" class="muted">0%</div>
+      </div>
+
+      <div class="row" style="margin-top:14px;">
+        <a class="btn" href="/history">History</a>
+        <a class="btn" href="/">New scan</a>
+      </div>
+
+      <div id="error" class="err" style="display:none;"></div>
+    </div>
   </div>
 
 <script>

@@ -102,7 +102,6 @@ TOOL_DEFS = {
             {
                 "name": "Optional DNS server",
                 "options": [
-                    # NOTE: handled specially in build_tool_command below
                     {"flag": "__server__", "type": "str", "label": "DNS Server (optional)", "default": ""},
                 ],
             },

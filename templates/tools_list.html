@@ -1,26 +1,335 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>SaberRecon - Tools</title>
   <link rel="stylesheet" href="/static/styles.css">
+
+  <style>
+    :root{
+      --ss-red:   rgb(163, 0, 21);    
+      --ss-teal:  rgb(32, 163, 158);  
+      --ss-cream: rgb(237, 235, 215); 
+      --ss-black: rgb(0, 0, 0);        
+      --ss-navy:  rgb(32, 44, 57);    
+
+      --bg-top:   rgb(22, 30, 40);     
+      --bg-mid:   rgb(10, 14, 18);  
+      --panel:    rgba(237,235,215,0.06);
+      --panel2:   rgba(237,235,215,0.085);
+      --border:   rgba(237,235,215,0.14);
+      --border2:  rgba(237,235,215,0.22);
+
+      --text:     rgb(244, 242, 226); 
+      --muted:    rgba(237,235,215,0.78);
+      --muted2:   rgba(237,235,215,0.60);
+
+      --tealGlow: rgba(32,163,158,0.22);
+      --redGlow:  rgba(163,0,21,0.20);
+
+      --radius: 18px;
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+    }
+
+    * { box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color: var(--text);
+
+      background:
+        radial-gradient(900px 520px at 18% 12%, var(--tealGlow), transparent 58%),
+        radial-gradient(820px 520px at 84% 18%, var(--redGlow), transparent 62%),
+        linear-gradient(180deg, var(--bg-top) 0%, var(--bg-mid) 78%, var(--ss-black) 100%);
+      min-height: 100vh;
+    }
+
+    a{ color: inherit; text-decoration: none; }
+
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(0,0,0,0.55);
+      border-bottom: 1px solid rgba(237,235,215,0.10);
+    }
+
+    .topbar-inner{
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 14px 18px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 14px;
+      min-width: 260px;
+    }
+
+    .brand img{
+      height: 58px;          
+      width: auto;
+      border-radius: 14px;
+      border: 1px solid rgba(237,235,215,0.14);
+      box-shadow: 0 14px 40px rgba(0,0,0,.45);
+      background: rgba(0,0,0,0.25);
+    }
+
+    .brand .name{
+      font-weight: 900;
+      letter-spacing: .2px;
+      font-size: 20px;
+      line-height: 1.1;
+    }
+    .brand .tag{
+      font-size: 12px;
+      color: var(--muted2);
+      margin-top: 2px;
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      gap: 18px;
+      font-weight: 800;
+      color: var(--muted);
+    }
+    .nav a{
+      padding: 10px 12px;
+      border-radius: 12px;
+      transition: 140ms ease;
+      border: 1px solid transparent;
+    }
+    .nav a:hover{
+      background: rgba(237,235,215,0.06);
+      border-color: rgba(237,235,215,0.10);
+      color: var(--text);
+    }
+    .nav a.active{
+      background: rgba(32,163,158,0.12);
+      border: 1px solid rgba(32,163,158,0.28);
+      color: var(--text);
+      box-shadow: 0 0 0 3px rgba(32,163,158,0.08);
+    }
+
+    .wrap{
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 34px 18px 60px;
+    }
+
+    .hero{
+      margin-top: 10px;
+      margin-bottom: 22px;
+      display:flex;
+      align-items:flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+    .hero h1{
+      margin: 0;
+      font-size: 44px;
+      letter-spacing: -0.6px;
+    }
+    .hero p{
+      margin: 8px 0 0;
+      color: var(--muted);
+      max-width: 760px;
+      font-size: 16px;
+      line-height: 1.65;
+    }
+
+    .divider{
+      height: 1px;
+      background: rgba(237,235,215,0.12);
+      margin: 18px 0 22px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+    @media (max-width: 1080px){
+      .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 600px){
+      .grid{ grid-template-columns: 1fr; }
+      .hero h1{ font-size: 36px; }
+      .brand{ min-width: unset; }
+      .brand .name, .brand .tag{ display:none; }
+    }
+
+    .card{
+      background:
+        linear-gradient(180deg, rgba(237,235,215,0.09), rgba(237,235,215,0.05));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px 18px 16px;
+      transition: transform 140ms ease, border-color 140ms ease, background 140ms ease, box-shadow 140ms ease;
+      position: relative;
+      overflow:hidden;
+    }
+    .card:before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      background:
+        radial-gradient(520px 260px at 18% 12%, rgba(32,163,158,0.16), transparent 60%),
+        radial-gradient(520px 260px at 92% 16%, rgba(163,0,21,0.10), transparent 62%);
+      opacity: .95;
+      pointer-events:none;
+    }
+    .card > *{ position: relative; }
+
+    .card:hover{
+      transform: translateY(-2px);
+      border-color: rgba(32,163,158,0.38);
+      background:
+        linear-gradient(180deg, rgba(237,235,215,0.11), rgba(237,235,215,0.06));
+      box-shadow: 0 22px 70px rgba(0,0,0,.58);
+    }
+
+    .card h3{
+      margin: 0 0 8px;
+      font-size: 18px;
+      letter-spacing: -0.2px;
+    }
+    .card p{
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+      min-height: 42px;
+    }
+
+    .open{
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      font-weight: 900;
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      border: 1px solid rgba(32,163,158,0.26);
+      background: rgba(32,163,158,0.10);
+      transition: 140ms ease;
+    }
+    .open:hover{
+      border-color: rgba(32,163,158,0.42);
+      background: rgba(32,163,158,0.14);
+      box-shadow: 0 0 0 3px rgba(32,163,158,0.10);
+    }
+
+    .arrow{
+      width: 18px; height: 18px;
+      display:inline-block;
+      border: 2px solid var(--text);
+      border-left: 0; border-top: 0;
+      transform: rotate(-45deg);
+      margin-left: 2px;
+      opacity: .9;
+    }
+
+    .footer-actions{
+      margin-top: 26px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(237,235,215,0.12);
+    }
+    .back{
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      color: var(--muted);
+      font-weight: 900;
+      padding: 10px 0;
+    }
+    .back:hover{ color: var(--text); }
+    .back .left{
+      width: 18px; height: 18px;
+      display:inline-block;
+      border: 2px solid currentColor;
+      border-right: 0; border-top: 0;
+      transform: rotate(45deg);
+    }
+
+    .accent-line{
+      height: 3px;
+      background: linear-gradient(90deg, rgba(163,0,21,0.0), rgba(163,0,21,0.85), rgba(32,163,158,0.75), rgba(32,163,158,0.0));
+      opacity: .85;
+    }
+  </style>
 </head>
+
 <body>
-  <div class="container">
-    <h1>Tools</h1>
-    <p>Pick a tool to configure options and run it against a target.</p>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img src="/static/SaberShieldLogoWithTextWithBackground.png" alt="SaberShield">
+        <div>
+          <div class="name">SaberRecon</div>
+          <div class="tag">Beginner-friendly recon toolkit</div>
+        </div>
+      </div>
 
-    <ul style="line-height: 2;">
-      {% for t in tools %}
-        <li>
-          <a href="/tools/{{ t.id }}">{{ t.title }}</a>
-        </li>
-      {% endfor %}
-    </ul>
-
-    <div style="margin-top:14px;">
-      <a href="/">Back home</a>
+      <nav class="nav">
+        <a href="/">Home</a>
+        <a class="active" href="/tools">Tools</a>
+        <a href="/history">History</a>
+      </nav>
     </div>
-  </div>
+    <div class="accent-line"></div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <h1>Tools</h1>
+        <p>Pick a tool, configure flags, preview the command, and run it safely inside your container.</p>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    {# tools is a LIST from get_tools_list(): [{"id": "...", "title": "..."}] #}
+    <section class="grid">
+      {% for t in tools %}
+        {% set tid = t.id if t.id is defined else t["id"] %}
+        {% set title = t.title if t.title is defined else t["title"] %}
+
+        {% set desc_map = {
+          "whois": "Lookup domain registration and ownership information.",
+          "nslookup": "Query DNS records using a simple resolver interface.",
+          "dig": "Perform advanced DNS queries with full output control.",
+          "nmap": "Scan hosts and services with configurable techniques and timing.",
+          "curl_headers": "Fetch HTTP response headers and follow redirects.",
+          "whatweb": "Fingerprint web technologies and frameworks.",
+          "subfinder": "Enumerate subdomains from many public sources.",
+          "wafw00f": "Detect and identify Web Application Firewalls (WAFs)."
+        } %}
+        {% set desc = desc_map.get(tid, "Configure and run this tool against your target.") %}
+
+        <a class="card" href="/tools/{{ tid }}">
+          <h3>{{ title }}</h3>
+          <p>{{ desc }}</p>
+          <span class="open">Open tool <span class="arrow" aria-hidden="true"></span></span>
+        </a>
+      {% endfor %}
+    </section>
+
+    <div class="footer-actions">
+      <a class="back" href="/"><span class="left" aria-hidden="true"></span>Back home</a>
+    </div>
+  </main>
 </body>
 </html>

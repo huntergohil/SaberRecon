@@ -34,3 +34,17 @@ Please be patient as these tools run, as they may take 1-2 minutes. Upon complet
 From the report page, you can view each tool's result and search by tool. 
 
 You can also visit the history page to view previous tests. You can also download these results as HTML documents from the history page. 
+
+TOOLS SECTION: 
+Navigating to tools allows users to view each tool individually and customize the flags which are ran against the target. 
+
+Some flags may require elevated privileges, and the developers are currently investigating the best solution for these flags to maximize security for the user. 
+
+
+#Future Plans 
+There are two primary future plans for SaberRecon: 
+1. Integrate AI usage 
+There will be the option to provide an AI API key and utilize openAI to analyze reports. This will allow users to quickly and easily identify potential vulnerabilities and recieve guidance on the next steps they should take to discover the vulnerability. 
+
+2. Multiple tool selection 
+There will be an option for users to individually select tools and flags to use and combine them into a single report. This will allow for more readable reports that can be more useful for analysis. 
